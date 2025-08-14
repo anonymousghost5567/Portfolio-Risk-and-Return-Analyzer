@@ -10,16 +10,13 @@ import matplotlib.pyplot as plt
 TRADING_DAYS = 252
 
 def fetch_price_data(tickers: List[str], period: str = "3y", interval: str = "1d") -> pd.DataFrame:
-    """
-    Try fetching prices from yfinance. If it fails (no internet/API issues),
-    fall back to data/sample_prices.csv bundled with the project.
-    """
+    
     try:
         import yfinance as yf
         data = yf.download(tickers=tickers, period=period, interval=interval, auto_adjust=True, progress=False)["Close"]
         if isinstance(data, pd.Series):  # single ticker edge-case
             data = data.to_frame(name=tickers[0])
-        # Drop any columns that are entirely NaN (unavailable tickers)
+        # Drop any columns that are entirely NaN
         data = data.dropna(how="all", axis=1)
         if data.empty:
             raise RuntimeError("Downloaded data is empty.")
